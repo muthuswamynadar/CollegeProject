@@ -1,20 +1,20 @@
 <% layout('/layouts/boilerplate') %>
 
 <body>
-    <div class="container mt-5 pb-5">
+    <div class="container d-flex flex-column align-items-center justify-content-center mt-5 pb-5">
         <!-- <h2 class="text-center mb-4">Edit Profile</h2> -->
       
         <form action="/update-profile" method="POST" enctype="multipart/form-data" class="mt-4">
             <!-- Profile Image Section -->
-            <div class="row mb-4">
-                <div class="col-md-4 text-center">
-                    <div class="position-relative" style="width: 150px; margin: 0 auto;">
-                        <img src="<%= user.profileImage || '/default-profile.png' %>" alt="Profile Image" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
-                        <label for="profileImage" class="position-absolute bottom-0 end-0 bg-white rounded-circle p-2" style="cursor: pointer;">
-                            <i class="fas fa-pencil-alt text-primary"></i>
-                        </label>
-                        <input type="file" name="profileImage" id="profileImage" class="d-none">
-                    </div>
+            <div class="text-center mb-4">
+                <div class="position-relative d-inline-block">
+                    <img src="<%= user.profileImage || '/default-profile.png' %>" alt="Profile Image" 
+                        class="rounded-circle img-thumbnail" 
+                        style="width: 150px; height: 150px; object-fit: cover;">
+                    <label for="profileImage" class="position-absolute bottom-0 end-0 bg-white rounded-circle p-2 shadow" style="cursor: pointer;">
+                        <i class="fas fa-pencil-alt text-primary"></i>
+                    </label>
+                    <input type="file" name="profileImage" id="profileImage" class="d-none">
                 </div>
             </div>
 

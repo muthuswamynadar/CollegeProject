@@ -1,95 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Landing Page</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: rgb(255, 140, 107);
+      color: #fff;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-bottom: 3px solid #ffcc00;
+    }
+
+    .navbar .nav-link {
+      color: #fff !important;
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .navbar .nav-link:hover {
+      background: #ffcc00;
+      color: #000 !important;
+    }
+
+    .navbar .login-button {
+      background-color: #ffcc00;
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: #000 !important;
+      font-weight: bold;
+    }
+
+    /* Section Styles */
+    .section {
+      padding: 100px 20px;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .section h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .section p {
+      font-size: 20px;
+      animation: slideIn 1.5s ease-in-out;
+    }
+
+    .section img {
+      width: 200px;
+      margin-top: 20px;
+      animation: bounce 2s infinite;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+  </style>
 </head>
 <body>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <video autoplay muted loop id="bg-video">
-        <source src="./videoplayback.mp4" type="video/mp4">
-        Your browser does not support HTML5 video.
-    </video>
-    <!-- Nav bar -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-          <button class="navbar-toggler pe-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <a class="navbar-brand ms-auto" href="#">SM LINKS</a>
-          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-              <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
-                <li class="nav-item">
-                  <a class="nav-link mx-lg-2 active" aria-current="page" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link mx-lg-2" href="#">About</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link mx-lg-2" href="#">Services</a>
-                  </li>
-                <li class="nav-item">
-                  <a class="nav-link mx-lg-2" href="#">Portfolio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link mx-lg-2" href="#">Contact</a>
-                  </li>
-              </ul>
-              
-            </div>
-          </div>
-          <!-- <a href="#" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">login</a> -->
-          <a href="/a/login" class="login-button">login</a>
-        </div>
-      </nav>
-    
- <!-- Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">Login to Your Account</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="/login" method="POST">
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" class="form-control" name="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password" required>
-                    </div>
-                    <div class="mb-3">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
-                </form>
-                <div class="text-center">
-                    <a href="/a/register" class="text-muted">Register</a>
-                </div>
-            </div>
-        </div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">MyWebsite</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="#home"><i class="fas fa-home"></i> Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about"><i class="fas fa-info-circle"></i> About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#links"><i class="fas fa-link"></i> Links</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+        </ul>
+        <a href="/a/login" class="btn login-button">Login</a>
+      </div>
     </div>
-</div>
-    <!-- End Nav Bar -->
-    
-    <!--  Hero Section -->
-      <section class="hero-section">
-        <div class="container d-flex align-items-center justify-content-center fs-1 text-white flex-column">
-            <h1>Social Media Links</h1>
-            <h2>Create your profile now</h2>
-        </div>
-      </section>
+  </nav>
+
+  <!-- Home Section -->
+  <div id="home" class="section">
+    <h1>Welcome to Our Website!</h1>
+    <p>Discover amazing things and explore the world of possibilities.</p>
+    <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" alt="Fun GIF">
+  </div>
+
+  <!-- About Section -->
+  <div id="about" class="section">
+    <h1>About Us</h1>
+    <p>We are a creative team dedicated to bringing your ideas to life. Join us on this journey!</p>
+  </div>
+
+  <!-- Links Section -->
+  <div id="links" class="section">
+    <h1>Important Links</h1>
+    <p>Find all our important links below:</p>
+    <ul>
+      <li><a href="https://example.com">Official Website</a></li>
+      <li><a href="https://twitter.com/example">Twitter</a></li>
+      <li><a href="https://instagram.com/example">Instagram</a></li>
+      <li><a href="https://github.com/example">GitHub</a></li>
+    </ul>
+  </div>
+
+  <!-- Contact Section -->
+  <div id="contact" class="section">
+    <h1>Contact Us</h1>
+    <p>Email us at: contact@example.com</p>
+  </div>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JavaScript for Smooth Scrolling -->
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
 </body>
 </html>

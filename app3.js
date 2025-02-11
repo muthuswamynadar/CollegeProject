@@ -83,33 +83,35 @@ app.get('/a/register', (req, res) => res.render('register', { title: 'Register' 
 
 
 
+// Register route
 
 app.post('/register', upload.single('profileImage'), async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, bio, instagram, twitter, facebook } = req.body;
     let profileImage = req.file ? '/uploads/' + req.file.filename : '/uploads/default.png';
-  
+
     try {
-      if (await User.findOne({ username })) {
-        return res.render('login', { 
-          title: 'Login', 
-          registerError: 'Username is taken', 
-          formToShow: 'sign-up' 
+        if (await User.findOne({ username })) {
+            return res.redirect('/a/login?error=Username is already taken');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword,
+            profileImage,
+            bio,
+            socialLinks: { instagram, twitter, facebook }
         });
-      }
-  
-      const newUser = new User({ /* ... */ });
-      await newUser.save();
-      res.redirect('/a/login');
+
+        await newUser.save();
+        res.redirect('/a/login?success=Account created. Please login.');
     } catch (error) {
-      res.render('login', { 
-        title: 'Login', 
-        registerError: 'Registration failed', 
-        formToShow: 'sign-up' 
-      });
+        console.error(error);
+        return res.redirect('/a/login?error=Error registering user');
     }
-  });
-
-
+});
 
 
 
@@ -151,22 +153,19 @@ app.get('/a/login', (req, res) => res.render('login', { title: 'Login' }));
 // Login Logic
 
 
-
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-  
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.render('login', { 
-        title: 'Login', 
-        loginError: 'Invalid credentials', 
-        formToShow: 'sign-in' 
-      });
+        return res.redirect('/a/login?error=Invalid credentials');
     }
-  
+
     req.session.user = user;
     res.redirect('/a/dashboard');
-  });
+});
+
+  
 
 // app.post('/login', async (req, res) => {
 //     const { email, password } = req.body;

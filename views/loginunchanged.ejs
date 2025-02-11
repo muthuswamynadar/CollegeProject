@@ -11,9 +11,7 @@
     <main>
       <div class="box">
         <div class="inner-box">
-          <!-- Forms Wrap - Active class added based on formToShow -->
           <div class="forms-wrap <%= (typeof formToShow !== 'undefined' && formToShow === 'sign-up') ? 'active' : '' %>">
-            <!-- Sign-in Form -->
             <form action="/login" method="POST" class="sign-in-form">
               <div class="logo">
                 <img src="/img/logo.png" alt="easyclass" />
@@ -28,38 +26,23 @@
 
               <div class="actual-form">
                 <div class="input-wrap">
-                  <input
-                    type="text"
-                    minlength="4"
-                    class="input-field"
-                    name="email"
-                    value="<%= (typeof loginFormData !== 'undefined' && loginFormData.email) ? loginFormData.email : '' %>"
-                    required
-                  />
+                  <input type="text" minlength="4" class="input-field" name="email" required />
                   <label>Email</label>
                 </div>
 
                 <div class="input-wrap">
-                  <input
-                    type="password"
-                    minlength="4"
-                    class="input-field"
-                    autocomplete="off"
-                    name="password"
-                    required
-                  />
+                  <input type="password" minlength="4" class="input-field" autocomplete="off" name="password" required />
                   <label>Password</label>
                 </div>
-
-                <!-- Display login error if any -->
-                <div id="error-message" class="error-message" style="display: none;"></div>
-
+                <% if (typeof loginError !== 'undefined' && loginError) { %>
+                  <div class="error-message"><%= loginError %></div>
+                <% } %>
+              
 
                 <input type="submit" value="Sign In" class="sign-btn" />
               </div>
             </form>
 
-            <!-- Sign-up Form -->
             <form action="/register" method="POST" class="sign-up-form">
               <div class="logo">
                 <img src="/img/logo.png" alt="SM" />
@@ -74,47 +57,25 @@
 
               <div class="actual-form">
                 <div class="input-wrap">
-                  <input
-                    type="text"
-                    minlength="4"
-                    class="input-field"
-                    autocomplete="off"
-                    name="username"
-                    value="<%= (typeof registerFormData !== 'undefined' && registerFormData.username) ? registerFormData.username : '' %>"
-                    required
-                  />
+                  <input type="text" minlength="4" class="input-field" autocomplete="off" name="username" required />
                   <label>User Name</label>
                 </div>
 
                 <div class="input-wrap">
-                  <input
-                    type="email"
-                    class="input-field"
-                    autocomplete="off"
-                    name="email"
-                    value="<%= (typeof registerFormData !== 'undefined' && registerFormData.email) ? registerFormData.email : '' %>"
-                    required
-                  />
+                  <input type="email" class="input-field" autocomplete="off" name="email" required />
                   <label>Email</label>
                 </div>
 
                 <div class="input-wrap">
-                  <input
-                    type="password"
-                    minlength="4"
-                    class="input-field"
-                    autocomplete="off"
-                    name="password"
-                    required
-                  />
+                  <input type="password" minlength="4" class="input-field" autocomplete="off" name="password" required />
                   <label>Password</label>
                 </div>
 
                 <input type="submit" value="Sign Up" class="sign-btn" />
-
-                <!-- Display registration error if any -->
-                <div id="error-message" class="error-message" style="display: none;"></div>
-
+                <% if (typeof registerError !== 'undefined' && registerError) { %>
+                  <div class="error-message"><%= registerError %></div>
+                <% } %>
+              
 
                 <p class="text">
                   By signing up, I agree to the <a href="#">Terms of Services</a> and
@@ -124,7 +85,6 @@
             </form>
           </div>
 
-          <!-- Carousel Section -->
           <div class="carousel">
             <div class="images-wrapper">
               <img src="/img/image1.png" class="image img-1 show" alt="" />
@@ -150,24 +110,18 @@
           </div>
         </div>
       </div>
-    </main>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-            const success = urlParams.get('success');
-        
-            if (error) {
-                alert(error);
-            }
-            if (success) {
-                alert(success);
-            }
-        });
-        </script>
-        
-
+    </main><script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Prevent default form submission for register form
+        const registerForm = document.querySelector('.sign-up-form');
+        if (registerForm) {
+          registerForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+            this.submit(); // Manually submit the form
+          });
+        }
+      });
+    </script>
     <script src="/js/style.js"></script>
   </body>
 </html>
