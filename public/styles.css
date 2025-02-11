@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    transition: margin-left 0.3s; /* Add smooth transition for body */
+}
+
+header {
+    position: relative;
+    z-index: 1000;
+}
+
+.menu {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    height: 100%;
+    width: 250px;
+    background: #fff;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.menu.active {
+    left: 0;
+}
+
+.menu-icon i {
+    transition: all 0.3s ease;
+}
+
+.menu-icon.active i.fa-bars {
+    transform: rotate(90deg);
+}
+
+.menu-icon i.fa-times {
+    transform: rotate(180deg);
+}
+
+/* Add overlay effect */
+body.menu-open::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 998;
+}
+
+body.menu-open::after {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Rest of your existing CSS */
+h1, h2 { color: #333; }
+ul { list-style: none; padding: 0; }
+ul li { background: #f8f8f8; margin: 10px; padding: 10px; border-radius: 5px; }
+.error-message {
+    color: red;
+    background: #ffdddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}

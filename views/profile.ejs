@@ -1,0 +1,73 @@
+<% layout('/layouts/boilerplate') %>
+
+<body>
+    <div class="container mt-5 pb-5">
+        <!-- <h2 class="text-center mb-4">Edit Profile</h2> -->
+      
+        <form action="/update-profile" method="POST" enctype="multipart/form-data" class="mt-4">
+            <!-- Profile Image Section -->
+            <div class="row mb-4">
+                <div class="col-md-4 text-center">
+                    <div class="position-relative" style="width: 150px; margin: 0 auto;">
+                        <img src="<%= user.profileImage || '/default-profile.png' %>" alt="Profile Image" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                        <label for="profileImage" class="position-absolute bottom-0 end-0 bg-white rounded-circle p-2" style="cursor: pointer;">
+                            <i class="fas fa-pencil-alt text-primary"></i>
+                        </label>
+                        <input type="file" name="profileImage" id="profileImage" class="d-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio Section -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label">Bio</label>
+                    <textarea name="bio" class="form-control" rows="4"><%= user.bio %></textarea>
+                </div>
+            </div>
+
+            <!-- Social Links Section -->
+            <div class="row">
+                <!-- Instagram -->
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        <i class="fab fa-instagram text-danger me-2"></i> Instagram
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fab fa-instagram text-danger"></i></span>
+                        <input type="text" name="instagram" class="form-control" value="<%= user.socialLinks.instagram %>">
+                    </div>
+                </div>
+
+                <!-- Twitter -->
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        <i class="fab fa-twitter text-info me-2"></i> Twitter
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fab fa-twitter text-info"></i></span>
+                        <input type="text" name="twitter" class="form-control" value="<%= user.socialLinks.twitter %>">
+                    </div>
+                </div>
+
+                <!-- Facebook -->
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        <i class="fab fa-facebook text-primary me-2"></i> Facebook
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fab fa-facebook text-primary"></i></span>
+                        <input type="text" name="facebook" class="form-control" value="<%= user.socialLinks.facebook %>">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="row" >
+                <div class="col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg mb-5">Update Profile</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>

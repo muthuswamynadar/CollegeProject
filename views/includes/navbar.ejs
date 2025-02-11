@@ -1,0 +1,23 @@
+<header>
+  <div class="menu-icon" id="menu-toggle">
+    <i class="fa-solid fa-bars fa-lg"></i>
+  </div>
+  <b><p>SM Links</p></b>
+  
+  <div class="greeting">
+    Hello, <%= user.username %>..! &nbsp;&nbsp;
+    <img src="<%= user.profileImage %>" alt="Profile Image" class="profile-img">
+  </div>
+</header>
+
+<div class="menu" id="side-menu">
+  <div class="menu-header">
+    <div>Welcome</div>
+  </div>
+  <ul>
+    <li><a href="/a/dashboard"><i class="fas fa-home"></i>Dashboard</a></li>
+    <li><a href="/<%= user.username%>"><i class="fas fa-users"></i>Preview</a></li>
+    <li><a href="/a/profile"><i class="fas fa-user-friends"></i>Profile</a></li>
+    <li><a href="/a/login"><i class="fas fa-box"></i>Logout</a></li>
+  </ul>
+</div>

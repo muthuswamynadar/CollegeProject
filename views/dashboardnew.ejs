@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background: #343a40;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: all 0.3s;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            display: block;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            background: #495057;
+        }
+        .content {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+        .img-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="content p-4">
+        <h2>Your Links</h2>
+        <div class="row">
+            <% user.links.forEach((link, index) => { %>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="<%= link.image %>" class="card-img-top img-fluid" alt="Link Image" style="height: 350px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= link.title %></h5>
+                            <p class="card-text"><%= link.description %></p>
+                            <a href="<%= link.url %>" class="btn btn-success" target="_blank">Visit</a>
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editLinkModal<%= index %>">Edit</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Link Modal -->
+                <div class="modal fade" id="editLinkModal<%= index %>" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Link</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="/update-link/<%= index %>" method="POST" enctype="multipart/form-data">
+                                <div class="modal-body">
+                                    <input type="text" name="title" class="form-control mb-2" value="<%= link.title %>">
+                                    <input type="text" name="url" class="form-control mb-2" value="<%= link.url %>">
+                                    <input type="file" name="imageFile" class="form-control mb-2" accept="image/*" onchange="previewImage(event, 'editPreview<%= index %>')">
+                                    <img id="editPreview<%= index %>" class="img-preview" src="<%= link.image %>" style="display: block;">
+                                    <textarea name="description" class="form-control mb-2"><%= link.description %></textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <!-- Add Link Modal -->
+    <div class="modal fade" id="addLinkModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Link</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/add-link" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="text" name="title" class="form-control mb-2" placeholder="Title" required>
+                        <input type="text" name="url" class="form-control mb-2" placeholder="URL" required>
+                        <input type="file" name="imageFile" class="form-control mb-2" accept="image/*" onchange="previewImage(event, 'addPreview')">
+                        <img id="addPreview" class="img-preview">
+                        <textarea name="description" class="form-control mb-2" placeholder="Description"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add Link</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event, imgId) {
+            const input = event.target;
+            const reader = new FileReader();
+            reader.onload = function () {
+                const img = document.getElementById(imgId);
+                img.src = reader.result;
+                img.style.display = 'block';
+            };
+            if (input.files && input.files[0]) {
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
