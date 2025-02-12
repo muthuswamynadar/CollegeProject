@@ -6,9 +6,7 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const ejsMate = require("ejs-mate");
 const multer = require('multer');
-const twilio = require("twilio");
-const accountSid = 'ACbf0c4777d4b0197ca4c7ba862e2e36ca';
-const authToken = 'dcabbc6e705ac8c1d23dc446f3003ca4';
+
 const {Resend} = require('resend');
 
 
