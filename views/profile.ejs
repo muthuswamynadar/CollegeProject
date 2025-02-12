@@ -42,10 +42,10 @@
                 <!-- Twitter -->
                 <div class="col-md-4 mb-3">
                     <label class="form-label">
-                        <i class="fab fa-twitter text-info me-2"></i> Twitter
+                        <i class="fa-solid fa-x"></i> Tweeter(now X)
                     </label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fab fa-twitter text-info"></i></span>
+                        <span class="input-group-text"><i class="fa-solid fa-x "></i></span>
                         <input type="text" name="twitter" class="form-control" value="<%= user.socialLinks.twitter %>">
                     </div>
                 </div>
@@ -70,4 +70,41 @@
             </div>
         </form>
     </div>
+
+
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+              <h5 class="modal-title" id="successModalLabel"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p id="successMessage">Operation successful!</p> <!-- Success Message -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          if (typeof bootstrap === "undefined") {
+            console.error("Bootstrap is not loaded. Check script inclusion.");
+            return;
+          }
+      
+          // Get URL parameters
+          const params = new URLSearchParams(window.location.search);
+      
+          // Show Success Modal if "m" param exists
+          if (params.has("m")) {
+            let message = params.get("m"); // Get message from query string
+            document.getElementById("successMessage").textContent = message; // Set modal message
+            new bootstrap.Modal(document.getElementById("successModal")).show(); // Show modal
+          }
+        });
+      </script>
 </body>

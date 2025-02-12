@@ -6,6 +6,15 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const ejsMate = require("ejs-mate");
 const multer = require('multer');
+const twilio = require("twilio");
+const accountSid = 'ACbf0c4777d4b0197ca4c7ba862e2e36ca';
+const authToken = 'dcabbc6e705ac8c1d23dc446f3003ca4';
+const {Resend} = require('resend');
+
+
+const resend = new Resend('re_cMVKEiZY_95eVDtUDWr64wJDp9WmAy9Tv');
+
+
 
 const app = express();
 const PORT = 3000;
@@ -16,6 +25,13 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 const upload = multer({ storage });
+
+
+const linkStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'public/links/'),
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+});
+const uploadLink = multer({ storage: linkStorage });
 
 // Database Connection
 mongoose.connect('mongodb://localhost:27017/linktree_clone', {
@@ -32,12 +48,15 @@ const UserSchema = new mongoose.Schema({
     profileImage: { type: String, default: '/uploads/default.png' },
     bio: { type: String, default: '' },
     socialLinks: {
-        instagram: { type: String, default: '' },
-        twitter: { type: String, default: '' },
-        facebook: { type: String, default: '' }
+        instagram: { type: String, default: 'https://www.instagram.com/' },
+        twitter: { type: String, default: 'https://x.com/' },
+        facebook: { type: String, default: 'https://facebook.com/' }
     },
-    links: [{ title: String, url: String, image: String, description: String }]
+    number:{type:Number,default:0},
+    links: [{ title: String, url: String, image: String, description: String, clicks: { type: Number, default: 0 } }],
+    profileViews: { type: Number, default: 0 } // New field to track profile visits
 });
+
 const User = mongoose.model('User', UserSchema);
 
 // Middleware
@@ -86,7 +105,7 @@ app.get('/a/register', (req, res) => res.render('register', { title: 'Register' 
 // Register route
 
 app.post('/register', upload.single('profileImage'), async (req, res) => {
-    const { username, email, password, bio, instagram, twitter, facebook } = req.body;
+    const { username, email, password, bio, instagram, number, twitter, facebook } = req.body;
     let profileImage = req.file ? '/uploads/' + req.file.filename : '/uploads/default.png';
 
     try {
@@ -102,16 +121,34 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
             password: hashedPassword,
             profileImage,
             bio,
-            socialLinks: { instagram, twitter, facebook }
+            socialLinks: { instagram, twitter, facebook },
+            number
         });
 
-        await newUser.save();
+        (async function () {
+            const { data, error } = await resend.emails.send({
+              from: 'SM-Links <onboarding@resend.dev>',
+              to: ['zxcvbnmilu360@gmail.com'],
+              subject: 'Welcome to Our Platform!',
+              html: `<h3>Hello ${username},</h3><p>Welcome to our platform! We're excited to have you here.</p><p>Best regards,<br>SM-Links Team</p>`,
+            });
+          
+            if (error) {
+              return console.error({ error });
+            }
+          
+            console.log({ data });
+          })();
+
+        
+        
         res.redirect('/a/login?success=Account created. Please login.');
     } catch (error) {
         console.error(error);
-        return res.redirect('/a/login?error=Error registering user');
+        res.redirect('/a/login?error=Error registering user');
     }
 });
+
 
 
 
@@ -140,7 +177,7 @@ app.post('/update-profile', upload.single('profileImage'), async (req, res) => {
         );
 
         req.session.user = updatedUser; // Update session with new data
-        res.redirect('/a/profile');
+        res.redirect('/a/profile?m=Profile Updated successfully');
     } catch (error) {
         console.error(error);
         res.send('Error updating profile');
@@ -162,7 +199,7 @@ app.post('/login', async (req, res) => {
     }
 
     req.session.user = user;
-    res.redirect('/a/dashboard');
+    res.redirect('/a/track-stats');
 });
 
   
@@ -172,55 +209,115 @@ app.post('/login', async (req, res) => {
 //     const user = await User.findOne({ email });
 
 //     if (!user || !(await bcrypt.compare(password, user.password))) {
-//         return res.render('login', { title: 'Login', error: 'Invalid credentials' });
+//         return res.render('login', { error: "Invalid credentials", loginFormData: req.body });
 //     }
 
 //     req.session.user = user;
-//     res.redirect('/a/dashboard');
+//     res.redirect('/a/track-stats');
 // });
+
 
 // Dashboard
 app.get('/a/dashboard', async (req, res) => {
     if (!req.session.user) return res.redirect('/a/login');
 
     const user = await User.findOne({ email: req.session.user.email });
-    res.render('dashboard', { title: 'Dashboard', user });
+    res.render('mylinks', { title: 'My Links', user });
 });
+
+
 
 // Add Link
-app.post('/add-link', async (req, res) => {
+// app.post('/add-link', async (req, res) => {
+//     if (!req.session.user) return res.redirect('/a/login');
+
+//     const { title, url, image, description } = req.body;
+//     const user = await User.findOne({ email: req.session.user.email });
+
+//     user.links.push({ title, url, image, description });
+//     await user.save();
+
+//     res.redirect('/a/dashboard');
+// });
+app.post('/add-link', uploadLink.single('image'), async (req, res) => {
     if (!req.session.user) return res.redirect('/a/login');
+    const { title, url, description } = req.body;
+    const image = req.file ? '/links/' + req.file.filename : '';
 
-    const { title, url, image, description } = req.body;
     const user = await User.findOne({ email: req.session.user.email });
-
     user.links.push({ title, url, image, description });
     await user.save();
-
-    res.redirect('/a/dashboard');
+    res.redirect('/a/dashboard?m=Link Added successfully');
 });
 
-// Update Link
-app.post('/update-link/:index', async (req, res) => {
+
+
+
+
+
+
+// // Update Link
+// app.post('/update-link/:index', async (req, res) => {
+//     if (!req.session.user) return res.redirect('/a/login');
+
+//     const { index } = req.params;
+//     const { title, url, image, description } = req.body;
+
+//     try {
+//         const user = await User.findOne({ email: req.session.user.email });
+
+//         if (!user || !user.links[index]) return res.status(404).send("Link not found");
+
+//         Object.assign(user.links[index], { title, url, image, description });
+
+//         await user.save();
+//         res.redirect('/a/dashboard');
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send("Server Error");
+//     }
+// });
+
+app.post('/update-link/:index', uploadLink.single('image'), async (req, res) => {
     if (!req.session.user) return res.redirect('/a/login');
-
     const { index } = req.params;
-    const { title, url, image, description } = req.body;
+    const { title, url, description } = req.body;
 
+    const user = await User.findOne({ email: req.session.user.email });
+    if (!user || !user.links[index]) return res.status(404).send("Link not found");
+
+    const image = req.file ? '/links/' + req.file.filename : user.links[index].image;
+    Object.assign(user.links[index], { title, url, image, description });
+
+    await user.save();
+    res.redirect('/a/dashboard?m=Updated');
+});
+
+
+
+//new route
+app.get('/track-link/:username/:index', async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.session.user.email });
+        const { username, index } = req.params;
+        const user = await User.findOne({ username });
 
         if (!user || !user.links[index]) return res.status(404).send("Link not found");
 
-        Object.assign(user.links[index], { title, url, image, description });
-
+        // Increment link click count
+        user.links[index].clicks += 1;
         await user.save();
-        res.redirect('/a/dashboard');
+
+        // Redirect to the actual link
+        res.redirect(user.links[index].url);
     } catch (error) {
         console.error(error);
         res.status(500).send("Server Error");
     }
 });
+
+
+
+
 
 // Delete Link
 app.post('/delete-link/:index', async (req, res) => {
@@ -233,7 +330,7 @@ app.post('/delete-link/:index', async (req, res) => {
 
         user.links.splice(req.params.index, 1);
         await user.save();
-        res.redirect("/a/dashboard");
+        res.redirect("/a/dashboard?m=Deleted Successfully");
     } catch (error) {
         console.error(error);
         res.status(500).send("An error occurred while deleting the link.");
@@ -251,11 +348,87 @@ app.get('/:username', async (req, res) => {
         const user = await User.findOne({ username: req.params.username });
         if (!user) return res.status(404).send("User not found");
 
+        // Increment profile views
+        user.profileViews += 1;
+        await user.save();
+
         res.render("userProfile", { user, title: "User Profile" });
     } catch (error) {
         res.status(500).send("Server Error");
     }
 });
 
+
+
+
+
+
+// Add new route to track stats
+app.get('/a/track-stats', async (req, res) => {
+    try {
+        // Check if the user is logged in
+        if (!req.session.user) return res.redirect('/a/login');
+
+        // Fetch user data
+        const user = await User.findOne({ email: req.session.user.email });
+
+        // Gather data for rendering
+        const totalLinks = user.links.length;
+        const totalProfileViews = user.profileViews;
+
+        // Prepare data for table (links and clicks)
+        const linksData = user.links.map(link => ({
+            title: link.title,
+            url: link.url,
+            clicks: link.clicks
+        }));
+
+        // Render the stats page with data
+        res.render('dashboard', {
+            title: 'Dashboard',
+            totalLinks,
+            totalProfileViews,
+            linksData,
+            user
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server Error");
+    }
+});
+
+
+
+
+
 // Start Server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+
+
+
+app.post('/add-link', upload.single('image'), async (req, res) => {
+    if (!req.session.user) return res.redirect('/a/login');
+    const { title, url, description } = req.body;
+    const image = req.file ? '/links/' + req.file.filename : '';
+
+    const user = await User.findOne({ email: req.session.user.email });
+    user.links.push({ title, url, image, description });
+    await user.save();
+    res.redirect('/a/mylinks');
+});
+
+// Update Link (Now supports image uploads)
+app.post('/update-link/:index', upload.single('image'), async (req, res) => {
+    if (!req.session.user) return res.redirect('/a/login');
+    const { index } = req.params;
+    const { title, url, description } = req.body;
+
+    const user = await User.findOne({ email: req.session.user.email });
+    if (!user || !user.links[index]) return res.status(404).send("Link not found");
+
+    const image = req.file ? '/links/' + req.file.filename : user.links[index].image;
+    Object.assign(user.links[index], { title, url, image, description });
+
+    await user.save();
+    res.redirect('/a/dashboard?m=Updated');
+});

@@ -53,6 +53,7 @@
         }
         .social-icon:hover {
             transform: scale(1.1);
+            color: #ff758c;
         }
         .links-container {
             margin-top: 20px;
@@ -114,8 +115,9 @@
         </div>
         
         <div class="links-container">
-            <% user.links.forEach(link => { %>
-                <a href="<%= link.url %>" target="_blank" class="text-decoration-none">
+            <% user.links.forEach((link, index) => { %>
+                <a href="/track-link/<%= user.username %>/<%= index %>" target="_blank" class="text-decoration-none">
+            
                     <div class="link-card d-flex align-items-center">
                         <img src="<%= link.image %>" alt="Link icon">
                         <div>

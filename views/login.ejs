@@ -5,9 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign in & Sign up Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/login.css" />
+    <!-- Bootstrap CSS -->
+
   </head>
   <body>
+    
     <main>
       <div class="box">
         <div class="inner-box">
@@ -97,7 +101,17 @@
                   />
                   <label>Email</label>
                 </div>
-
+                <div class="input-wrap">
+                  <input
+                    type="number"
+                    minlength="4"
+                    class="input-field"
+                    autocomplete="off"
+                    name="number"
+                    required
+                  />
+                  <label>phone Number</label>
+                </div>
                 <div class="input-wrap">
                   <input
                     type="password"
@@ -135,9 +149,9 @@
             <div class="text-slider">
               <div class="text-wrap">
                 <div class="text-group">
-                  <h2>Create your own courses</h2>
+                  <h2>Create your own SM Links</h2>
                   <h2>Customize as you like</h2>
-                  <h2>Invite students to your class</h2>
+                  <h2>Invite People to your network</h2>
                 </div>
               </div>
 
@@ -150,15 +164,52 @@
           </div>
         </div>
       </div>
+      <!-- Error Message Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="errorModalLabel">Error</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="errorMessage">Something went wrong.</p> <!-- Error Message Here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Success Message Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="successMessage"></p> <!-- Dynamic Message -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     </main>
 
-    <script>
+    <!-- <script>
         document.addEventListener("DOMContentLoaded", function () {
             const urlParams = new URLSearchParams(window.location.search);
             const error = urlParams.get('error');
             const success = urlParams.get('success');
         
             if (error) {
+              
                 alert(error);
             }
             if (success) {
@@ -166,7 +217,37 @@
             }
         });
         </script>
+         -->
+         <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            // Ensure Bootstrap is loaded
+            if (typeof bootstrap === "undefined") {
+              console.error("Bootstrap is not loaded. Check script inclusion.");
+              return;
+            }
         
+            // Get error message from URL params
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("error")) {
+              let errorMessage = params.get("error");
+              document.getElementById("errorMessage").textContent = errorMessage; // Set error message
+              new bootstrap.Modal(document.getElementById("errorModal")).show(); // Show modal
+            }
+            if (params.has("success")) {
+            let message = params.get("success"); // Get message from query string
+            document.getElementById("successMessage").textContent = message; // Set modal message
+            new bootstrap.Modal(document.getElementById("successModal")).show(); // Show modal
+          }
+        
+          });
+        </script>
+        
+        <!-- Bootstrap JavaScript (Required for Modals) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+        
+
 
     <script src="/js/style.js"></script>
   </body>
