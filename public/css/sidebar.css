@@ -1,7 +1,9 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    background-color: rgb(255, 140, 107) !important;
+/* background-color: #8471fd9d !important; */
+background: linear-gradient(to right, #DBEAFE, #EDE9FE);
+    /* background:linear-gradient(to bottom, #ff9a8b, #ff6a88, #ff99ac)!important; */
     color:#121212;
     transition: margin-left 0.3s ease-in-out;
 }
@@ -29,7 +31,7 @@ html, body {
 
 header {
     color: whitesmoke;
-    background-color: #0707072f        !important;
+    background-color: #160807        !important;
     padding: 10px;
     display: flex;
     justify-content: space-between;
@@ -55,7 +57,8 @@ header p{
     left: 0;
     width: 250px;
     height: 100%;
-    background-color: #0707072f;
+    color: white;
+    background-color: #8471fdf1 !important;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
     z-index: 1000;
@@ -142,12 +145,12 @@ body.menu-open, main.menu-open{
     text-align: center;
 }
 .footer a {
-    color: rgba(255,255,255,0.9) !important;
+    color: rgba(0, 0, 0, 1) !important;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 .footer a:hover {
-    color: white !important;
+    color: rgba(10, 10, 10, 0.911) !important;
     transform: scale(1.05);
 }
 
@@ -155,7 +158,23 @@ body.menu-open, main.menu-open{
 
 
 
-
+/* Hide SM Links in header on smaller screens */
+@media (max-width: 768px) {
+    header p {
+      display: none;
+    }
+  }
+  
+  /* Ensure the sidebar header text is visible */
+  .menu-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-bottom: 1px solid #444 !important;
+    margin-bottom: 10px;
+  }
 
 
 

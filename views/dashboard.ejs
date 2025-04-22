@@ -1,48 +1,184 @@
 <% layout('/layouts/boilerplate') %>
 <!-- dashboard.ejs -->
-<body >
-    <div class="container mt-4">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card text-white mb-3" style="background-color: rgba(39, 39, 39, 0.327);">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Links</h5>
-                        <h2 class="card-text"><%= totalLinks %></h2>
-                    </div>
-                </div>
+<style>
+    :root {
+        --primary: #4F46E5;
+        --secondary: #6B7280;
+        --card-bg: #ffffff;
+        --text-primary: #111827;
+        --text-secondary: #6B7280;
+    }
+
+    .dashboard-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .stat-card h5 {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .stat-card h2 {
+        color: var(--text-primary);
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .table-container {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .modern-table th {
+        background: #F9FAFB;
+        color: var(--text-secondary);
+        font-weight: 500;
+        padding: 1rem;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .modern-table td {
+        padding: 1rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid #F3F4F6;
+        max-width: 300px;
+        word-break: break-word;
+    }
+
+    .modern-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .modern-table a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .modern-table a:hover {
+        color: #4338CA;
+        text-decoration: underline;
+    }
+
+    .click-badge {
+        background: #E5E7EB;
+        color: var(--text-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+    }
+
+    h2.section-title {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-card h2 {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+
+<body class=" ">
+    <% if (linksData) { %>
+     
+   
+    <div class="dashboard-container py-4 min-vh-100">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h5>Total Links</h5>
+                <h2><%= totalLinks %></h2>
             </div>
-            <div class="col-md-6">
-                <div class="card text-white mb-3" style="background-color: rgba(224, 83, 55, 0.701);">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Profile Views</h5>
-                        <h2 class="card-text"><%= totalProfileViews %></h2>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <h5>Total Profile Views</h5>
+                <h2><%= totalProfileViews %></h2>
             </div>
         </div>
 
-        <h2 class="mb-3 text-white">Link Statistics</h2>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover table-bordered" style="background-color: rgba(255, 255, 255, 0.9);">
-                <thead class="thead-dark">
+        <h2 class="section-title">Link Statistics</h2>
+        <div class="table-container">
+            <table class="modern-table">
+                <thead>
                     <tr>
-                        <th scope="col">Link Title</th>
-                        <th scope="col">URL</th>
-                        <th scope="col">Clicks</th>
+                        <th>Link Title</th>
+                        <th>URL</th>
+                        <th>Clicks</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% linksData.forEach(link => { %>
                         <tr>
                             <td><%= link.title %></td>
-                            <td><a href="<%= link.url %>" target="_blank" class="text-decoration-none"><%= link.url %></a></td>
-                            <td><span class="badge bg-secondary"><%= link.clicks %></span></td>
+                            <td><a href="<%= link.url %>" target="_blank"><%= link.url %></a></td>
+                            <td><span class="click-badge"><%= link.clicks %></span></td>
                         </tr>
                     <% }) %>
                 </tbody>
             </table>
         </div>
     </div>
-
-   
+    <% } else { %>
+        <div class="text-center py-5 min-vh-100">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h5>Total Links</h5>
+                    <h2><%= totalLinks %></h2>
+                </div>
+                <div class="stat-card">
+                    <h5>Total Profile Views</h5>
+                    <h2><%= totalProfileViews %></h2>
+                </div>
+            </div>
+    
+            <h2 class="section-title">Link Statistics</h2>
+          <div class="display-5 text-muted mb-4">📭</div>
+          <h4 class="text-dark mb-3">No Links Found</h4>
+          <p class="text-muted">Start by adding your first link to get started!</p>
+        </div>
+        <% } %>
 </body>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Landing Page</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: rgb(255, 140, 107);
+      color: #fff;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-bottom: 3px solid #ffcc00;
+    }
+
+    .navbar .nav-link {
+      color: #fff !important;
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .navbar .nav-link:hover {
+      background: #ffcc00;
+      color: #000 !important;
+    }
+
+    .navbar .login-button {
+      background-color: #ffcc00;
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: #000 !important;
+      font-weight: bold;
+    }
+
+    /* Section Styles */
+    .section {
+      padding: 100px 20px;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .section h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .section p {
+      font-size: 20px;
+      animation: slideIn 1.5s ease-in-out;
+    }
+
+    .section img {
+      width: 200px;
+      margin-top: 20px;
+      animation: bounce 2s infinite;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">MyWebsite</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="#home"><i class="fas fa-home"></i> Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about"><i class="fas fa-info-circle"></i> About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#links"><i class="fas fa-link"></i> Links</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+        </ul>
+        <a href="/a/login" class="btn login-button">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Home Section -->
+  <div id="home" class="section">
+    <h1>Welcome to Our Website!</h1>
+    <p>Discover amazing things and explore the world of possibilities.</p>
+    <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" alt="Fun GIF">
+  </div>
+
+  <!-- About Section -->
+  <div id="about" class="section">
+    <h1>About Us</h1>
+    <p>We are a creative team dedicated to bringing your ideas to life. Join us on this journey!</p>
+  </div>
+
+  <!-- Links Section -->
+  <div id="links" class="section">
+    <h1>Important Links</h1>
+    <p>Find all our important links below:</p>
+    <ul>
+      <li><a href="https://example.com">Official Website</a></li>
+      <li><a href="https://twitter.com/example">Twitter</a></li>
+      <li><a href="https://instagram.com/example">Instagram</a></li>
+      <li><a href="https://github.com/example">GitHub</a></li>
+    </ul>
+  </div>
+
+  <!-- Contact Section -->
+  <div id="contact" class="section">
+    <h1>Contact Us</h1>
+    <p>Email us at: contact@example.com</p>
+  </div>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JavaScript for Smooth Scrolling -->
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>

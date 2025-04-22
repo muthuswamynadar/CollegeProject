@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Panel</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <style>
+        td {
+  word-break: break-word; /* Ensures long words break and wrap */
+  max-width: 250px; /* Adjust width as needed */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds '...' for very long text */
+  white-space: normal; /* Allows wrapping */
+}
+
+.modal-body {
+  overflow-x: auto; /* Enables horizontal scrolling if needed */
+}
+
+    </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+    <% if (users.some(user => user.links.some(link => link.status === "pending"))) { %>
+        <div class="alert alert-warning text-center">
+            ⚠️ There are pending links that need approval. Please update them!
+        </div>
+    <% } %>
+    
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Admin Panel - Manage Users</h2>
+        <input type="text" id="searchUser" class="form-control w-25" placeholder="Search Users...">
+    </div>
+    
+    <table class="table table-hover table-bordered text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Total Links</th>
+                <th>Approved Links</th>
+                <th>Pending Links</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <% users.forEach(user => { 
+                const approvedCount = user.links.filter(link => link.status === "approved").length;
+                const pendingCount = user.links.filter(link => link.status === "pending").length;
+            %>
+                <tr>
+                    <td><%= user.username %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.links.length %></td>
+                    <td><span class="badge bg-success"><%= approvedCount %></span></td>
+                    <td><span class="badge bg-warning text-dark"><%= pendingCount %></span></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm view-links-btn" data-user-id="<%= user._id %>">
+                            <i class="bi bi-eye"></i> View Links
+                        </button>
+                        <form action="/admin/delete-user/<%= user._id %>" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Viewing User Links -->
+<div class="modal fade" id="viewLinksModal" tabindex="-1" aria-labelledby="viewLinksLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="viewLinksLabel">User Links</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>URL</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-links-body"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("searchUser").addEventListener("keyup", function() {
+            let searchQuery = this.value.toLowerCase();
+            document.querySelectorAll("#userTableBody tr").forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(searchQuery) ? "" : "none";
+            });
+        });
+    
+        document.querySelectorAll(".view-links-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                const userId = this.getAttribute("data-user-id");
+                const user = <%- JSON.stringify(users) %>.find(u => u._id === userId);
+                
+                if (user) {
+                    document.getElementById("viewLinksLabel").textContent = "Links for " + user.username;
+                    let linksHTML = user.links.length > 0
+                        ? user.links.map((link, index) => `
+                            <tr>
+                                <td>${link.title}</td>
+                                <td><a href="${link.url}" target="_blank">${link.url}</a></td>
+                                <td>
+                                    <span class="badge ${link.status === 'approved' ? 'bg-success' : link.status === 'pending' ? 'bg-warning' : 'bg-danger'}">
+                                        ${link.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    ${link.status === 'pending' ? `
+                                        <form action="/admin/approve-link/${user._id}/${index}" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="bi bi-check"></i> Approve
+                                            </button>
+                                        </form>
+                                        <form action="/admin/reject-link/${user._id}/${index}" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-x"></i> Reject
+                                            </button>
+                                        </form>
+                                    ` : ""}
+                                </td>
+                            </tr>`).join("")
+                        : `<tr><td colspan="4" class="text-center text-muted">No links available for this user.</td></tr>`;
+
+                    document.getElementById("modal-links-body").innerHTML = linksHTML;
+                    new bootstrap.Modal(document.getElementById("viewLinksModal")).show();
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

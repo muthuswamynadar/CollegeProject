@@ -1,5 +1,9 @@
 body {
-    background: linear-gradient(to bottom, #ff9a8b, #ff6a88, #ff99ac);
+    /* background: linear-gradient(to bottom, #ff9a8b, #ff6a88, #ff99ac);
+     */
+     background: linear-gradient(to bottom, #8471fd9d, #8471fd9d, #8471fd9d) !important;
+
+
     text-align: center;
     font-family: Arial, sans-serif;
 }

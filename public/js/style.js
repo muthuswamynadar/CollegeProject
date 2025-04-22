@@ -41,6 +41,10 @@ bullets.forEach((bullet) => {
 });
 
 
+// Function to update the sidebar header text
+
+
+
 // document.addEventListener("DOMContentLoaded", function () {
 //   console.log("Error handling script running...");
 

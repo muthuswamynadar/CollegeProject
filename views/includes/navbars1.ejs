@@ -1,0 +1,48 @@
+
+<style>
+  #side-menu ul li {
+    color: black !important;
+  }
+</style>
+
+
+<header>
+  <div class="menu-icon" id="menu-toggle">
+    <i class="fa-solid fa-bars fa-lg"></i>
+  </div>
+  <b><p>SM Links</p></b>
+  
+  <div class="greeting">
+    Hello, <%= user.username %>
+    <img src="<%= user.profileImage %>" alt="Profile Image" class="profile-img">
+  </div>
+</header>
+
+<div class="menu " id="side-menu">
+  <div class="menu-header">
+    <div id="menu-header-text">Welcome</div> 
+  </div>
+  <ul class="text-dark">
+    <li ><a href="/a/track-stats"><i class="fas fa-home"></i>Dashboard</a></li>
+    <li><a href="/a/dashboard"><i class="fa-solid fa-link"></i>My Links</a></li>
+    <li><a href="/a/profile"><i class="fas fa-user-friends"></i>Profile</a></li>
+    <li><a href="/<%= user.username%>"><i class="fa-regular fa-clipboard"></i>Preview</a></li>
+    <li><a href="/a/login"><i class="fas fa-box"></i>Logout</a></li>
+  </ul>
+</div>
+<script>
+  function updateSidebarHeader() {
+  const menuHeaderText = document.getElementById("menu-header-text");
+  const screenWidth = window.innerWidth;
+
+  if (screenWidth <= 768) {
+    menuHeaderText.textContent = "SM Links"; // Replace with "SM Links" on smaller screens
+  } else {
+    menuHeaderText.textContent = "Welcome"; // Revert to "Welcome" on larger screens
+  }
+}
+
+// Call the function on page load and window resize
+window.addEventListener("load", updateSidebarHeader);
+window.addEventListener("resize", updateSidebarHeader);
+</script>

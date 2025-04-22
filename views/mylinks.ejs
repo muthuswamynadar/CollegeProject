@@ -1,206 +1,612 @@
 <% layout('/layouts/boilerplate') %>
-<!-- dashboard.ejs -->
 
-<!-- Main Content -->
-<div class="content p-4">
-    <h2>Your Links</h2>
-    <div class="d-flex justify-content-end mb-3">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLinkModal">
-            <i class="fas fa-plus"></i> Add Link
-        </button>
-    </div>
+<style>
+  /* Global Styles */
+  body {
+    /* background: linear-gradient(135deg, #1a1a2e, #16213e); */
+    color: #000000;
+  }
 
-    <!-- Table for Links -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover" style="border-radius: 8px; overflow: hidden;">
-            <thead style="background: #2C3E50; color: white;">
-                <tr>
-                    <th>Image</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>URL</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody style="color: rgba(245, 222, 179, 0.238) !important;">
-                <% user.links.forEach((link, index) => { %>
-                    <tr>
-                        <td>
-                            <img src="<%= link.image %>" class="img-fluid rounded" alt="Link Image" style="width: 100px; height: auto;">
-                        </td>
-                        <td><%= link.title %></td>
-                        <td><%= link.description %></td>
-                        <td>
-                            <a href="/track-link/<%= user.username %>/<%= index %>" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-external-link-alt"></i> Visit
-                            </a>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-info preview-btn" data-bs-toggle="modal" data-bs-target="#previewModal" data-url="http://localhost:3000/demo">
-                                <i class="fas fa-eye"></i> Preview
-                            </button>
-                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editLinkModal<%= index %>">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <form action="/delete-link/<%= index %>" method="POST" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                <%}); %>
-            </tbody>
-        </table>
-    </div>
-</div>
+  .links-container {
+    background: rgba(255, 254, 254, 0.726);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+  }
 
-<!-- Preview Modal (centered and styled) -->
-<div class="modal fade" id="previewModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Preview</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  .link-card {
+    background: rgba(0, 0, 0, 0.116);
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+
+  .link-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .link-image {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .link-image:hover {
+    transform: scale(1.1);
+  }
+  .status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.658);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .action-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.658);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  /* Glass Effect for Modal */
+  .modal-glass {
+    background: rgba(255, 255, 255, 0.514);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Modal Header */
+  .modal-glass .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px;
+  }
+
+  .modal-glass .modal-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #000000;
+  }
+
+  /* Close Button */
+  .modal-glass .btn-close {
+    filter: invert(1);
+    opacity: 0.7;
+    transition: 0.3s;
+  }
+
+  .modal-glass .btn-close:hover {
+    opacity: 1;
+  }
+
+  /* Form Fields */
+  .modal-glass .form-control {
+    background: rgb(248, 248, 248);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    transition: 0.3s;
+  }
+
+  .modal-glass .form-control:focus {
+    background: rgba(255, 17, 17, 0.993);
+    border-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
+  }
+
+  /* Labels */
+  .modal-glass .form-floating label {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* Image Styling */
+  .modal-glass img {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Modal Footer */
+  .modal-glass .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Buttons */
+  .modal-glass .btn {
+    padding: 10px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: 0.3s ease-in-out;
+  }
+
+  .modal-glass .btn-primary {
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+
+  .modal-glass .btn-primary:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.5);
+  }
+
+  .modal-glass .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+  }
+
+  .modal-glass .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Success Modal */
+  .success-modal {
+    background: rgba(40, 167, 69, 0.15);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    border-radius: 15px;
+  }
+
+  .success-modal .modal-title {
+    color: #28a745;
+  }
+
+  .success-modal .modal-header {
+    border-bottom: 1px solid rgba(40, 167, 69, 0.2);
+  }
+
+  /* Responsive */
+  @media (max-width: 576px) {
+    .modal-glass {
+      border-radius: 10px;
+    }
+
+    .modal-glass .modal-title {
+      font-size: 1.2rem;
+    }
+
+    .modal-glass .btn {
+      padding: 8px 14px;
+      font-size: 0.9rem;
+    }
+  }
+  /* hdhf */
+  /* Custom File Upload Styling */
+  .custom-file-upload {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .custom-file-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: rgb(255, 255, 255); */
+    background: rgba(211, 7, 7, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #000000;
+    font-weight: 500;
+    transition: 0.3s ease-in-out;
+  }
+
+  .upload-label:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .upload-label .icon {
+    margin-right: 8px;
+    font-size: 1.2rem;
+  }
+
+  /* Form Styles */
+  /* .form-floating>.form-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+} */
+
+  /* .form-floating>.form-control:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+} */
+
+  /* .form-floating>label {
+    color: rgba(255, 255, 255, 0.6);
+    padding: 10px;
+} */
+
+  /* Unique Add Link Button */
+  .add-link-btn {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+  }
+
+  .add-link-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(106, 17, 203, 0.5);
+  }
+
+  /* Success Modal */
+  .success-modal {
+    background: rgba(40, 167, 69, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(40, 167, 69, 0.2);
+    border-radius: 20px;
+  }
+
+  .success-modal .modal-header {
+    border-bottom: 1px solid rgba(40, 167, 69, 0.1);
+  }
+
+  .success-modal .modal-title {
+    color: #28a745;
+  }
+
+  /* .success-modal .modal-body {
+    color: #fff;
+} */
+</style>
+
+<div class="container py-4 min-vh-100">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-black-70 mb-0">Your Links</h2>
+    <button
+      class="add-link-btn"
+      data-bs-toggle="modal"
+      data-bs-target="#addLinkModal"
+    >
+      <i class="fas fa-plus me-2"></i>Add Link
+    </button>
+  </div>
+
+  <% if (user.links.length > 0) { %>
+  <div class="links-container">
+    <div class="row g-3">
+      <% user.links.forEach((link, index) => { %>
+      <div class="col-12">
+        <div class="link-card p-3 shadow-sm rounded">
+          <div class="d-flex flex-column flex-md-row align-items-center gap-3">
+            <img
+              src="<%= link.image %>"
+              class="link-image img-fluid rounded"
+              alt="Link preview"
+            />
+            <div class="flex-grow-1 w-100">
+              <div
+                class="d-flex flex-column flex-sm-row align-items-center gap-2 mb-2 text-center text-sm-start"
+              >
+                <h5 class="text-black-70 mb-0"><%= link.title %></h5>
+                <span
+                  class="status-badge px-2 py-1 rounded <%= link.status === 'approved' ? 'bg-success text-white' : link.status === 'pending' ? 'bg-warning text-dark' : link.status === 'rejected' ? 'bg-danger text-white' : 'bg-secondary text-white' %>"
+                >
+                  <%= link.status %>
+                </span>
+              </div>
+              <p class="text-black mb-2 text-center text-sm-start">
+                <%= link.description %>
+              </p>
+              <div
+                class="d-flex flex-wrap justify-content-center justify-content-sm-start align-items-center gap-2"
+              >
+                <a
+                  href="/track-link/<%= user.username %>/<%= index %>"
+                  target="_blank"
+                  class="action-btn text-info"
+                >
+                  <i class="fas fa-external-link-alt"></i> Visit
+                </a>
+                <button
+                  class="action-btn text-warning"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editLinkModal<%= index %>"
+                >
+                  <i class="fas fa-pencil-alt"></i> Edit
+                </button>
+                <form
+                  action="/delete-link/<%= index %>"
+                  method="POST"
+                  class="d-inline"
+                >
+                  <button type="submit" class="action-btn text-danger">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </form>
+              </div>
             </div>
-            <div class="modal-body p-0">
-                <iframe id="previewIframe" src="" class="preview-iframe" 
-                        style="width: 100%; height: 70vh; border: none;"></iframe>
-            </div>
+          </div>
         </div>
+      </div>
+      <% }); %>
     </div>
-</div>
-<!-- <h3>Profile Views: <%= user.profileViews %></h3>
-<h3>Link Clicks:</h3>
-<ul>
-    <% user.links.forEach((link, index) => { %>
-        <li><%= link.title %>: <%= link.clicks %> clicks</li>
-    <% }) %>
-</ul> -->
-<!-- Edit Link Modals (centered and styled) -->
-<% user.links.forEach((link, index) => { %>
-<div class="modal fade" id="editLinkModal<%= index %>" tabindex="-1">
+  </div>
+  <% } else { %>
+  <div class="text-center py-5">
+    <div class="display-5 text-muted mb-4">📭</div>
+    <h4 class="text-dark mb-3">No Links Found</h4>
+    <p class="text-muted">Start by adding your first link to get started!</p>
+  </div>
+  <% } %>
+
+  <!-- Edit Link Modals -->
+  <% user.links.forEach((link, index) => { %>
+  <div class="modal fade" id="editLinkModal<%= index %>" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Link</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="/update-link/<%= index %>" method="POST" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Title</label>
-                        <input type="text" name="title" class="form-control" value="<%= link.title %>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">URL</label>
-                        <input type="url" name="url" class="form-control" value="<%= link.url %>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Current Image</label>
-                        <img src="<%= link.image %>" class="img-fluid mb-2" style="max-width: 200px;">
-                        <label class="form-label">New Image</label>
-                        <input type="file" name="image" class="form-control" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="3"><%= link.description %></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </form>
+      <div class="modal-content modal-glass">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Link</h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"
+          ></button>
         </div>
-    </div>
-</div>
-<% }); %>
+        <form
+          action="/update-link/<%= index %>"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div class="modal-body">
+            <div class="mb-4">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  name="title"
+                  class="form-control"
+                  value="<%= link.title %>"
+                />
+                <label>Title</label>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="form-floating">
+                <input
+                  type="url"
+                  name="url"
+                  class="form-control"
+                  value="<%= link.url %>"
+                />
+                <label>URL</label>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-black-70 b-3">Current Image</label>
 
-<!-- Add Link Modal (centered and styled) -->
-<div class="modal fade" id="addLinkModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Link</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              <!-- Image Preview Section -->
+              <div class="image-preview-container">
+                <img
+                  id="currentImage"
+                  src="<%= link.image %>"
+                  class="img-fluid rounded-3 w-100"
+                />
+              </div>
+
+              <!-- Custom File Upload -->
+              <div class="custom-file-upload mt-3">
+                <input
+                  type="file"
+                  name="image"
+                  id="imageUpload"
+                  class="custom-file-input"
+                  accept="image/*"
+                  onchange="previewNewImage(event)"
+                />
+                <label for="imageUpload" class="upload-label">
+                  <span class="icon">📂</span> Choose New Image
+                </label>
+              </div>
             </div>
-            <form action="/add-link" method="POST" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Title</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">URL</label>
-                        <input type="url" name="url" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Image</label>
-                        <input type="file" name="image" class="form-control" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Add Link</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </form>
-        </div>
+
+            <div class="mb-4">
+              <div class="form-floating">
+                <textarea
+                  name="description"
+                  class="form-control"
+                  style="height: 100px"
+                >
+<%= link.description %></textarea
+                >
+                <label>Description</label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
     </div>
-</div>
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  </div>
+  <% }); %>
+
+  <!-- Add Link Modal -->
+  <div class="modal fade" id="addLinkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-glass">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Link</h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <form action="/add-link" method="POST" enctype="multipart/form-data">
+          <div class="modal-body">
+            <div class="mb-4">
+              <div class="form-floating">
+                <input type="text" name="title" class="form-control" required />
+                <label>Title</label>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="form-floating">
+                <input type="url" name="url" class="form-control" required />
+                <label>URL</label>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-black">Upload Thumbnail</label>
+              <div class="custom-file-upload">
+                <input
+                  type="file"
+                  name="image"
+                  id="imageUpload"
+                  class="custom-file-input"
+                  accept="image/*"
+                  onchange="previewImage(event)"
+                />
+                <label for="imageUpload" class="upload-label">
+                  <span class="icon">📂</span> Choose Image
+                </label>
+              </div>
+              <div id="imagePreview" class="mt-3"></div>
+            </div>
+            <div class="mb-4">
+              <div class="form-floating">
+                <textarea
+                  name="description"
+                  class="form-control"
+                  style="height: 100px"
+                ></textarea>
+                <label>Description</label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Add Link</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade success-modal" id="successModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header bg-success text-white">
-          <h5 class="modal-title" id="successModalLabel"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header">
+          <h5 class="modal-title">Success!</h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"
+          ></button>
         </div>
         <div class="modal-body">
-          <p id="successMessage">Operation successful!</p> <!-- Success Message -->
+          <p id="successMessage"></p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+            Continue
+          </button>
         </div>
       </div>
     </div>
   </div>
-  
-<!-- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const m = urlParams.get('m');
-        // const success = urlParams.get('success')
-    
-        if (m) {
-          
-            alert(m);
-        }
-        // if (success) {
-        //     alert(success);
-        // }
-    });
-    </script> -->
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          if (typeof bootstrap === "undefined") {
-            console.error("Bootstrap is not loaded. Check script inclusion.");
-            return;
-          }
-      
-          // Get URL parameters
-          const params = new URLSearchParams(window.location.search);
-      
-          // Show Success Modal if "m" param exists
-          if (params.has("m")) {
-            let message = params.get("m"); // Get message from query string
-            document.getElementById("successMessage").textContent = message; // Set modal message
-            new bootstrap.Modal(document.getElementById("successModal")).show(); // Show modal
-          }
-        });
-      </script>
-      
+  <script>
+    // Same JavaScript as original
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("m")) {
+        document.getElementById("successMessage").textContent = params.get("m");
+        new bootstrap.Modal(document.getElementById("successModal")).show();
+        history.replaceState(null, "", window.location.pathname);
+      }
+    });
+    function previewImage(event) {
+      const preview = document.getElementById("imagePreview");
+      const file = event.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded-3" style="max-width: 100%; height: auto;">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.innerHTML = "";
+      }
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById(
+            "imagePreview"
+          ).innerHTML = `<img src="${e.target.result}" class="img-fluid rounded">`;
+        };
+        reader.readAsDataURL(file);
+        document.getElementById("uploadProgress").style.display = "block"; // Show progress bar
+      }
+    }
+
+    function previewNewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("currentImage").src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        document.getElementById("uploadProgress").style.display = "block"; // Show progress bar
+      }
+    }
+  </script>
+</div>

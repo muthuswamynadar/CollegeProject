@@ -1,9 +1,20 @@
 <% layout('/layouts/boilerplate') %>
+<style>
+    
+    .box{
+        background-color: rgb(249, 252, 255);
+        border-radius: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        width:70%;
 
+    }
+</style>
 <body>
+    <div class="box mb-3 mt-1">
+
+    
     <div class="container d-flex flex-column align-items-center justify-content-center mt-5 pb-5">
-        <!-- <h2 class="text-center mb-4">Edit Profile</h2> -->
-      
         <form action="/update-profile" method="POST" enctype="multipart/form-data" class="mt-4">
             <!-- Profile Image Section -->
             <div class="text-center mb-4">
@@ -62,16 +73,82 @@
                 </div>
             </div>
 
+   <!-- Theme Color Selection -->
+   <div class="row mb-4">
+    <div class="col-md-12">
+        <label class="form-label fw-bold">Choose Theme Color</label>
+        <div class="d-flex flex-wrap gap-3">
+            <% const gradients = [
+                { name: "Purple-Pink", value: "linear-gradient(to bottom, #8571fd, #841fd5, #8471fd)" },
+                { name: "Blue-Green", value: "linear-gradient(to bottom, #00c6ff, #0072ff)" },
+                { name: "Red-Orange", value: "linear-gradient(to bottom, #ff7e5f, #feb47b)" },
+                { name: "Green-Yellow", value: "linear-gradient(to bottom, #56ab2f, #a8e063)" }
+            ]; %>
+
+            <% gradients.forEach((gradient) => { %>
+                <div class="form-check d-flex align-items-center gap-2">
+                    <input class="form-check-input" type="radio" name="themeColor" value="<%= gradient.value %>"
+                        <% if (user.themeColor === gradient.value) { %> checked <% } %> >
+                    <div class="rounded-circle border shadow-sm" 
+                        style="width: 30px; height: 30px; background: <%= gradient.value %>;">
+                    </div>
+                    <label class="form-check-label"><%= gradient.name %></label>
+                </div>
+            <% }); %>
+
+            <!-- Custom Color Option -->
+            <div class="form-check d-flex align-items-center gap-2">
+                <input class="form-check-input" type="radio" name="themeColor" value="custom" 
+                    <% if (!user.themeColor || user.themeColor === 'custom') { %> checked <% } %> >
+                <label class="form-check-label fw-bold">Custom</label>
+            </div>
+        </div>
+
+        <!-- Custom Gradient Inputs (only shown if "Custom" is selected) -->
+        <div id="customGradientInputs" class="mt-3 p-3 border rounded shadow-sm bg-light <%= user.themeColor !== 'custom' ? 'd-none' : '' %>">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Start Color</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-palette text-primary"></i>
+                        </span>
+                        <input type="color" name="startColor" 
+                               class="form-control form-control-color border" 
+                               value="<%= user.startColor || '#8571fd' %>"
+                               title="Choose start color">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">End Color</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-palette text-danger"></i>
+                        </span>
+                        <input type="color" name="endColor" 
+                               class="form-control form-control-color border" 
+                               value="<%= user.endColor || '#841fd5' %>"
+                               title="Choose end color">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
             <!-- Submit Button -->
-            <div class="row" >
+            <div class="row">
                 <div class="col-md-12 text-center">
                     <button type="submit" class="btn btn-primary btn-lg mb-5">Update Profile</button>
                 </div>
             </div>
         </form>
     </div>
-
-
+</div>
+    <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -80,31 +157,56 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <p id="successMessage">Operation successful!</p> <!-- Success Message -->
+              <p id="successMessage">Operation successful!</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      </div>
+    </div>
       
     <script>
+        
+document.addEventListener("DOMContentLoaded", function () {
+    if (typeof bootstrap === "undefined") {
+        console.error("Bootstrap is not loaded. Check script inclusion.");
+        return;
+    }
+
+    // Get URL parameters
+    const params = new URLSearchParams(window.location.search);
+
+    // Show Success Modal if "m" param exists
+    if (params.has("m")) {
+        let message = params.get("m"); // Get message from query string
+        document.getElementById("successMessage").textContent = message; // Set modal message
+        let modal = new bootstrap.Modal(document.getElementById("successModal"));
+        modal.show(); // Show modal
+
+        // Remove "m" parameter from URL after displaying the message
+        const newUrl = window.location.pathname + window.location.hash; 
+        history.replaceState(null, "", newUrl);
+    }
+});
+
+
+
+
         document.addEventListener("DOMContentLoaded", function () {
-          if (typeof bootstrap === "undefined") {
-            console.error("Bootstrap is not loaded. Check script inclusion.");
-            return;
-          }
-      
-          // Get URL parameters
-          const params = new URLSearchParams(window.location.search);
-      
-          // Show Success Modal if "m" param exists
-          if (params.has("m")) {
-            let message = params.get("m"); // Get message from query string
-            document.getElementById("successMessage").textContent = message; // Set modal message
-            new bootstrap.Modal(document.getElementById("successModal")).show(); // Show modal
-          }
+        const themeColorRadios = document.querySelectorAll('input[name="themeColor"]');
+        const customGradientInputs = document.getElementById("customGradientInputs");
+
+        themeColorRadios.forEach((radio) => {
+            radio.addEventListener("change", function () {
+                if (this.value === 'custom') {
+                    customGradientInputs.classList.remove('d-none');
+                } else {
+                    customGradientInputs.classList.add('d-none');
+                }
+            });
         });
-      </script>
+    });
+
+    </script>
 </body>
