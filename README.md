@@ -1,4 +1,4 @@
-# 🌐 SM-Links: Your Social Hub
+# 🌐 SM-Links Project
 
 A responsive and elegant single-page website that centralizes all your social media links — inspired by Linktree. Built using HTML, CSS, and JavaScript, this project helps users showcase their online presence in a simple, mobile-friendly format.
 
