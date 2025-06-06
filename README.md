@@ -20,21 +20,7 @@ A responsive and elegant single-page website that centralizes all your social me
 - **Icons:** Font Awesome / SVG  
 - **Deployment:** GitHub Pages  
 
----
 
-## 📷 Screenshots
-
-![SM-Links Homepage](https://user-images.githubusercontent.com/yourusername/sm-links-homepage.png)  
-*Add actual screenshot image hosted on your chosen platform*
-
----
-
-## 🚀 Live Demo
-
-👉 [Visit the Live Site](https://yourusername.github.io/sm-links)  
-👉 [GitHub Repository](https://github.com/yourusername/sm-links)
-
----
 
 ## 📁 Project Structure
 
@@ -62,7 +48,7 @@ sm-links/
 ## 👨‍💻 Author
 
 **Muthuswamy Nadar**  
-📧 [Email](mailto:youremail@example.com) | 🌐 [Portfolio](https://yourusername.github.io/) | 💼 [LinkedIn](https://linkedin.com/in/yourusername)
+📧 [Email](mailto:muthuswamynadar25@gmail.com) | 🌐 [Portfolio](https://muthuswamynadar.github.io/) | 💼 [LinkedIn](https://www.linkedin.com/in/nadarmuthuswamy/)
 
 ---
 
