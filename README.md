@@ -18,9 +18,6 @@ A responsive and elegant single-page website that centralizes all your social me
 
 - **Frontend:** HTML5, CSS3, JavaScript  
 - **Icons:** Font Awesome / SVG  
-- **Deployment:** GitHub Pages  
-
-
 
 ## 📁 Project Structure
 
